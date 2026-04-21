@@ -64,7 +64,7 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
         index: i,
       });
       const encoded = btoa(newNote);
-      const url = `${window.location.origin}/?note=${encoded}`;
+      const url = `${window.location.origin}?note=${encoded}`;
       notes.push(url);
     }
 

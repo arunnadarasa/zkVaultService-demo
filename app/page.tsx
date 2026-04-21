@@ -6,6 +6,7 @@ import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { DepositAction } from "./components/DepositAction";
 import { NoteModal } from "./components/NoteModal";
+import { NotesCard } from "./components/NotesCard";
 
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -40,8 +41,9 @@ function HomeContent() {
         <Hero />
 
         <section className="px-6 pb-24">
-          <div className="max-w-lg mx-auto">
+          <div className="max-w-4xl mx-auto grid grid-cols-1 gap-6 sm:grid-cols-2">
             <DepositAction />
+            <NotesCard />
           </div>
         </section>
       </main>
