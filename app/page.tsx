@@ -11,7 +11,7 @@ import { NoteModal } from "./components/NoteModal";
 function HomeContent() {
   const searchParams = useSearchParams();
   const noteParam = searchParams.get("note");
-  
+
   const note = useMemo(() => {
     if (!noteParam) return null;
     try {
@@ -20,9 +20,9 @@ function HomeContent() {
       return null;
     }
   }, [noteParam]);
-  
+
   const [showModal, setShowModal] = useState(false);
-  
+
   useEffect(() => {
     if (note) {
       setShowModal(true);
@@ -39,21 +39,17 @@ function HomeContent() {
       <Navbar />
       <main className="min-h-screen bg-gradient-animated bg-gradient-radial bg-grid-pattern bg-noise">
         <Hero />
-        
+
         <section className="px-6 pb-24">
           <div className="max-w-lg mx-auto">
             <DepositAction />
           </div>
         </section>
-        
-        <footer className="py-8 px-6">
-          <div className="max-w-4xl mx-auto text-center text-sm text-[var(--text-secondary)]">
-            <p>ZkVaultService — Zero-Knowledge Private Transactions on Sepolia</p>
-          </div>
-        </footer>
       </main>
 
-      {showModal && note && <NoteModal note={note} onClose={handleCloseModal} />}
+      {showModal && note && (
+        <NoteModal note={note} onClose={handleCloseModal} />
+      )}
     </>
   );
 }
@@ -65,3 +61,4 @@ export default function Home() {
     </Suspense>
   );
 }
+

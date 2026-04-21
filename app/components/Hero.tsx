@@ -57,8 +57,8 @@ function SystemStatus({ label, value, copyable = true }: SystemStatusProps) {
     <div
       onClick={copy}
       className={`p-3 rounded-xl border bg-[var(--bg-secondary)] transition-all group ${
-        copyable 
-          ? "border-[var(--border)] hover:border-[var(--emerald-primary)]/50 cursor-pointer" 
+        copyable
+          ? "border-[var(--border)] hover:border-[var(--emerald-primary)]/50 cursor-pointer"
           : "border-[var(--border)]/50"
       }`}
     >
@@ -68,7 +68,9 @@ function SystemStatus({ label, value, copyable = true }: SystemStatusProps) {
         </span>
         {copyable && (copied ? <CheckIcon /> : <CopyIcon />)}
       </div>
-      <div className={`text-sm font-mono text-[var(--emerald-light)] ${isShort ? "" : "truncate"}`}>
+      <div
+        className={`text-sm font-mono text-[var(--emerald-light)] ${isShort ? "" : "truncate"}`}
+      >
         {display}
       </div>
     </div>
@@ -83,13 +85,11 @@ export function Hero() {
   return (
     <section className="pt-32 pb-16 px-6">
       <div className="max-w-4xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--emerald-subtle)] bg-[var(--emerald-subtle)]/30 text-[var(--emerald-light)] text-sm font-medium mb-6 animate-fade-in">
-          <span className="w-2 h-2 rounded-full bg-[var(--emerald-light)] animate-pulse"></span>
-          Zero-Knowledge Powered
+        <div className="container w-full flex justify-center mb-3">
+          <img src="/logos/logo-green.png" alt="EVVM" className="h-6" />
         </div>
 
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 animate-slide-up">
-          <span className="text-[var(--emerald-primary)]">EVVM::</span>
           <span className="text-[var(--text-primary)]">ZkVaultService</span>
         </h1>
 
@@ -116,4 +116,3 @@ export function Hero() {
     </section>
   );
 }
-
