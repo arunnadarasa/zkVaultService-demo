@@ -11,7 +11,7 @@ const DepositIcon = () => (
 export function DepositAction({ onAction }: { onAction?: () => void }) {
   const [amount, setAmount] = useState("");
 
-  const mockBalance = "1.2345";
+  const mockBalance = "12";
   const mockAddress = "0x7a2...f3d1";
 
   return (

@@ -1,4 +1,85 @@
+"use client";
+
+import { useState } from "react";
+
+const CopyIcon = () => (
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+    />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M5 13l4 4L19 7"
+    />
+  </svg>
+);
+
+interface SystemStatusProps {
+  label: string;
+  value: string;
+  copyable?: boolean;
+}
+
+function SystemStatus({ label, value, copyable = true }: SystemStatusProps) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = () => {
+    if (!copyable) return;
+    navigator.clipboard.writeText(value);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const isShort = value.length <= 12;
+  const display = isShort ? value : `${value.slice(0, 6)}...${value.slice(-4)}`;
+
+  return (
+    <div
+      onClick={copy}
+      className={`p-3 rounded-xl border bg-[var(--bg-secondary)] transition-all group ${
+        copyable 
+          ? "border-[var(--border)] hover:border-[var(--emerald-primary)]/50 cursor-pointer" 
+          : "border-[var(--border)]/50"
+      }`}
+    >
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs text-[var(--text-secondary)] uppercase tracking-wider">
+          {label}
+        </span>
+        {copyable && (copied ? <CheckIcon /> : <CopyIcon />)}
+      </div>
+      <div className={`text-sm font-mono text-[var(--emerald-light)] ${isShort ? "" : "truncate"}`}>
+        {display}
+      </div>
+    </div>
+  );
+}
+
 export function Hero() {
+  const zkVault = "0xab2771246878551063091eccaa1c8de5fa392a17";
+  const evvmCore = "0xA69D472AB4aE2d805254B02Dd512B8BF6DbEc688";
+  const usdc = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+
   return (
     <section className="pt-32 pb-16 px-6">
       <div className="max-w-4xl mx-auto text-center">
@@ -8,43 +89,31 @@ export function Hero() {
         </div>
 
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 animate-slide-up">
-          ZkVaultService
+          <span className="text-[var(--emerald-primary)]">EVVM::</span>
+          <span className="text-[var(--text-primary)]">ZkVaultService</span>
         </h1>
 
         <p className="text-xl md:text-2xl text-[var(--text-secondary)] max-w-2xl mx-auto animate-fade-in delay-100">
-          Private and compliant transactions on Ethereum using EVVM.
+          Private and compliant USDC transactions on Ethereum.
           <br />
           <span className="text-[var(--emerald-light)]">
-            Deposit, withdraw, and split notes
-          </span>{" "}
-          with zero-knowledge proofs.
+            Shielded pools, ZK proofs, audit-ready.
+          </span>
         </p>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto animate-fade-in delay-200">
-          <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)]">
-            <div className="text-2xl font-bold text-[var(--emerald-light)]">
-              0x...
-            </div>
-            <div className="text-sm text-[var(--text-secondary)]">
-              Shielded Pool
-            </div>
+        <div className="mt-12 max-w-3xl mx-auto animate-fade-in delay-200">
+          <div className="text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-3 text-left">
+            System Status
           </div>
-          <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)]">
-            <div className="text-2xl font-bold text-[var(--emerald-light)]">
-              zk-SNARK
-            </div>
-            <div className="text-sm text-[var(--text-secondary)]">
-              Proof Type
-            </div>
-          </div>
-          <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)]">
-            <div className="text-2xl font-bold text-[var(--emerald-light)]">
-              Sepolia
-            </div>
-            <div className="text-sm text-[var(--text-secondary)]">Network</div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <SystemStatus label="ZkVault" value={zkVault} />
+            <SystemStatus label="EVVM Core" value={evvmCore} />
+            <SystemStatus label="USDC" value={usdc} />
+            <SystemStatus label="Network" value="Sepolia" copyable={false} />
           </div>
         </div>
       </div>
     </section>
   );
 }
+

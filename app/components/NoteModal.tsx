@@ -183,4 +183,3 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
     </div>
   );
 }
-
