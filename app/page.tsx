@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { Suspense, useState, useMemo, useEffect } from "react";
@@ -61,4 +60,3 @@ export default function Home() {
     </Suspense>
   );
 }
-

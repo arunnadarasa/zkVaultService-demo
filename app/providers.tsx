@@ -9,6 +9,7 @@ import {
 import { WagmiProvider, http, createConfig } from "wagmi";
 import { sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster, toast } from "sonner";
 
 const config = createConfig({
   chains: [sepolia],
@@ -27,16 +28,31 @@ const customTheme = darkTheme({
   overlayBlur: "small",
 });
 
+function ToastProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      {children}
+      <Toaster
+        position="bottom-right"
+        theme="dark"
+        expand={false}
+        richColors={false}
+        closeButton
+      />
+    </>
+  );
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider theme={customTheme}>
-          {children}
+          <ToastProvider>{children}</ToastProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 }
 
-export { ConnectButton };
+export { ConnectButton, toast };

@@ -78,9 +78,9 @@ function SystemStatus({ label, value, copyable = true }: SystemStatusProps) {
 }
 
 export function Hero() {
-  const zkVault = "0xab2771246878551063091eccaa1c8de5fa392a17";
-  const evvmCore = "0xA69D472AB4aE2d805254B02Dd512B8BF6DbEc688";
-  const usdc = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+  const zkVault = process.env.NEXT_PUBLIC_ZKVAULT_ADDRESS;
+  const evvmCore = process.env.NEXT_PUBLIC_EVVM_CORE_ADDRESS;
+  const usdc = process.env.NEXT_PUBLIC_USDC_TOKEN_ADDRESS;
 
   return (
     <section className="pt-32 pb-16 px-6">
