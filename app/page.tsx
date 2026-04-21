@@ -7,6 +7,7 @@ import { Hero } from "./components/Hero";
 import { DepositAction } from "./components/DepositAction";
 import { NoteModal } from "./components/NoteModal";
 import { NotesCard } from "./components/NotesCard";
+import { parseEncodedNote } from "@/lib/shielded/storage";
 
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -15,7 +16,7 @@ function HomeContent() {
   const note = useMemo(() => {
     if (!noteParam) return null;
     try {
-      return JSON.parse(atob(noteParam));
+      return parseEncodedNote(noteParam);
     } catch {
       return null;
     }

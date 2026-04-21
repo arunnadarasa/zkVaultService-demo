@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { EncodedNote } from "@/types/encodedNote.types";
+import { toast } from "sonner";
+import { formatUnits } from "viem";
 
 interface NoteModalProps {
-  note: object;
+  note: EncodedNote;
   onClose: () => void;
 }
 
@@ -42,19 +45,18 @@ const CloseIcon = () => (
 export function NoteModal({ note, onClose }: NoteModalProps) {
   const [address, setAddress] = useState("");
   const [splitCount, setSplitCount] = useState(2);
-  const [toast, setToast] = useState<string | null>(null);
   const [createdNotes, setCreatedNotes] = useState<string[]>([]);
 
   const isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(address);
 
   const handleWithdraw = () => {
     if (!isValidAddress) return;
-    setToast(`Withdrawn to ${address.slice(0, 6)}...${address.slice(-4)}`);
+    toast.success(`Withdrawn to ${address.slice(0, 6)}...${address.slice(-4)}`);
     setTimeout(onClose, 2000);
   };
 
   const handleSplit = () => {
-    const amount = (note as { amount?: string }).amount || "1";
+    const amount = formatUnits(note.value, 6);
     const baseAmount = parseFloat(amount) / splitCount;
     const notes: string[] = [];
 
@@ -69,14 +71,20 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
     }
 
     setCreatedNotes(notes);
-    setToast(`Created ${splitCount} notes`);
-    setTimeout(() => setToast(null), 3000);
+    toast.success(`Created ${splitCount} notes`);
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    setToast("Copied to clipboard!");
-    setTimeout(() => setToast(null), 2000);
+    toast.success("Copied to clipboard!");
+  };
+
+  const displayAmount = () => {
+    try {
+      return formatUnits(note.value, 6);
+    } catch {
+      return "0";
+    }
   };
 
   return (
@@ -99,7 +107,7 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
             Redeem note
           </h2>
           <p className="text-sm text-[var(--text-secondary)]">
-            Amount: {(note as { amount?: string }).amount || "0"} USDc
+            Amount: {displayAmount()} USDC
           </p>
         </div>
 
@@ -171,12 +179,6 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
             <p className="text-xs text-[var(--text-secondary)] text-center mt-2">
               Click to copy
             </p>
-          </div>
-        )}
-
-        {toast && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl bg-[var(--emerald-primary)] text-[var(--bg-primary)] text-sm font-medium animate-fade-in">
-            {toast}
           </div>
         )}
       </div>

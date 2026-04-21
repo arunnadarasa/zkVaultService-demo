@@ -1,5 +1,3 @@
-"use client";
-
 import { EncodedNote } from "@/types/encodedNote.types";
 
 const key = "zkVault::notes";
@@ -24,23 +22,25 @@ export const saveNote = (note: EncodedNote): void => {
 };
 
 export const getNotes = (): string[] => {
+  if (typeof window === "undefined") return [];
   const notesRaw = window.localStorage.getItem(key);
   if (!notesRaw) return [];
 
   return JSON.parse(notesRaw);
 };
 
-export const parseEncodedNote = (urlNote: string): EncodedNote | null => {
-    const urlObj = new URL(urlNote);
-    const noteParam = urlObj.searchParams.get("note");
-    if (!noteParam) return null;
-
-    const tmp =  JSON.parse(atob(noteParam));
-	return {
-		...tmp,
+export const parseEncodedNote = (noteParam: string): EncodedNote | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const tmp = JSON.parse(atob(noteParam));
+    return {
+      ...tmp,
       value: BigInt(tmp.value),
       pk: BigInt(tmp.pk),
       random: BigInt(tmp.random),
-      nullifier: BigInt(tmp.nullifier)
-	}
-}
+      nullifier: BigInt(tmp.nullifier),
+    };
+  } catch {
+    return null;
+  }
+};

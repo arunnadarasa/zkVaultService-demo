@@ -1,3 +1,5 @@
+"use client";
+
 import { EncodedNote } from "../../types/encodedNote.types";
 import { getRandomField } from "../../util/random";
 import { appendEntryAndGetProof } from "./merkle";

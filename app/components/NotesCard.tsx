@@ -1,26 +1,30 @@
 "use client";
 
-import { useCallback, useSyncExternalStore, useState, useRef } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { getNotes } from "@/lib/shielded/storage";
 import { toast } from "sonner";
 
 export function NotesCard() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [notes, setNotes] = useState<string[]>([]);
   const cachedRef = useRef<string[]>([]);
 
-  const subscribe = useCallback((onStoreChange: () => void) => {
-    const interval = setInterval(onStoreChange, 3000);
-    return () => clearInterval(interval);
+  const loadNotes = useCallback(() => {
+    const fresh = getNotes();
+    if (
+      fresh.length !== cachedRef.current.length ||
+      fresh.some((n, i) => n !== cachedRef.current[i])
+    ) {
+      cachedRef.current = fresh;
+      setNotes(fresh);
+    }
   }, []);
 
-  const getSnapshot = () => {
-    const notes = getNotes();
-    if (cachedRef.current.length === notes.length) return cachedRef.current;
-    cachedRef.current = notes;
-    return notes;
-  };
-
-  const notes = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  useEffect(() => {
+    loadNotes();
+    const interval = setInterval(loadNotes, 3000);
+    return () => clearInterval(interval);
+  }, [loadNotes]);
 
   const handleCopy = async (url: string, index: number) => {
     try {
