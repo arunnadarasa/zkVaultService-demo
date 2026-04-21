@@ -1,8 +1,39 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+"use client";
+
+import { Suspense, useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { DepositAction } from "./components/DepositAction";
+import { NoteModal } from "./components/NoteModal";
 
-export default function Home() {
+function HomeContent() {
+  const searchParams = useSearchParams();
+  const noteParam = searchParams.get("note");
+  
+  const note = useMemo(() => {
+    if (!noteParam) return null;
+    try {
+      return JSON.parse(atob(noteParam));
+    } catch {
+      return null;
+    }
+  }, [noteParam]);
+  
+  const [showModal, setShowModal] = useState(false);
+  
+  useEffect(() => {
+    if (note) {
+      setShowModal(true);
+    }
+  }, [note]);
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    window.history.replaceState({}, "", "/");
+  };
+
   return (
     <>
       <Navbar />
@@ -21,6 +52,16 @@ export default function Home() {
           </div>
         </footer>
       </main>
+
+      {showModal && note && <NoteModal note={note} onClose={handleCloseModal} />}
     </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={null}>
+      <HomeContent />
+    </Suspense>
   );
 }
