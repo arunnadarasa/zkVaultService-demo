@@ -85,7 +85,7 @@ export function Hero() {
   return (
     <section className="pt-32 pb-16 px-6">
       <div className="max-w-4xl mx-auto text-center">
-        <div className="container w-full flex justify-center mb-3">
+        <div className="container w-full flex justify-center">
           <img src="/logos/logo-green.png" alt="EVVM" className="h-6" />
         </div>
 
@@ -106,10 +106,10 @@ export function Hero() {
             System Status
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <SystemStatus label="Network" value="Sepolia" copyable={false} />
             <SystemStatus label="ZkVault" value={zkVault} />
             <SystemStatus label="EVVM Core" value={evvmCore} />
             <SystemStatus label="USDC" value={usdc} />
-            <SystemStatus label="Network" value="Sepolia" copyable={false} />
           </div>
         </div>
       </div>
