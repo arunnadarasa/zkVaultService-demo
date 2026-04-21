@@ -1,22 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-const DepositIcon = () => (
-  <svg
-    className="w-6 h-6"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M12 4v16m0-16l-4 4m4-4l4 4"
-    />
-  </svg>
-);
+import { PlusIcon } from "./Icons";
 
 export function DepositCard({ onAction }: { onAction?: () => void }) {
   const [amount, setAmount] = useState("");
@@ -28,7 +13,7 @@ export function DepositCard({ onAction }: { onAction?: () => void }) {
     <div className="p-6 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border)] hover:border-[var(--emerald-primary)]/50 shadow-[0_0_40px_rgba(16,185,129,0.08)] hover:shadow-[0_0_60px_rgba(16,185,129,0.2)] transition-all duration-300">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-12 h-12 rounded-xl bg-[var(--emerald-subtle)] flex items-center justify-center text-[var(--emerald-light)]">
-          <DepositIcon />
+          <PlusIcon />
         </div>
         <div>
           <h3 className="text-xl font-semibold text-[var(--text-primary)]">

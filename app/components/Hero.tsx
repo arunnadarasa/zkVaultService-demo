@@ -1,38 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-const CopyIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-    />
-  </svg>
-);
-
-const CheckIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M5 13l4 4L19 7"
-    />
-  </svg>
-);
+import { CopyIcon, CheckIcon } from "./Icons";
 
 interface SystemStatusProps {
   label: string;
@@ -66,7 +35,7 @@ function SystemStatus({ label, value, copyable = true }: SystemStatusProps) {
         <span className="text-xs text-[var(--text-secondary)] uppercase tracking-wider">
           {label}
         </span>
-        {copyable && (copied ? <CheckIcon /> : <CopyIcon />)}
+        {copyable && (copied ? <CheckIcon /> : <CopyIcon className="w-4 h-4" />)}
       </div>
       <div
         className={`text-sm font-mono text-[var(--emerald-light)] ${isShort ? "" : "truncate"}`}
