@@ -9,12 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@evvm/evvm-js": "^0.1.33",
     "@rainbow-me/rainbowkit": "^2.2.10",
     "@tanstack/react-query": "^5.99.2",
     "next": "16.2.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "viem": "^2.48.1",
+    "viem": "2.45.0",
     "wagmi": "^2.19.5"
   },
   "devDependencies": {
