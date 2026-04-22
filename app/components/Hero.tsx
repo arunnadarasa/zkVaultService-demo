@@ -35,7 +35,8 @@ function SystemStatus({ label, value, copyable = true }: SystemStatusProps) {
         <span className="text-xs text-[var(--text-secondary)] uppercase tracking-wider">
           {label}
         </span>
-        {copyable && (copied ? <CheckIcon /> : <CopyIcon className="w-4 h-4" />)}
+        {copyable &&
+          (copied ? <CheckIcon /> : <CopyIcon className="w-4 h-4" />)}
       </div>
       <div
         className={`text-sm font-mono text-[var(--emerald-light)] ${isShort ? "" : "truncate"}`}

@@ -1,23 +1,34 @@
 "use client";
 
 import { useCallback, useState, useEffect, useRef } from "react";
-import { getNotes } from "@/lib/shielded/storage";
+import { getNotes, parseEncodedNote } from "@/lib/shielded/storage";
 import { toast } from "sonner";
+import { formatUnits } from "viem";
 import { CopyIcon, CheckIcon, DocumentIcon } from "./Icons";
+
+type DecodedNote = {
+  url: string;
+  value?: bigint;
+};
 
 export function NotesCard() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [notes, setNotes] = useState<string[]>([]);
-  const cachedRef = useRef<string[]>([]);
+  const [notes, setNotes] = useState<DecodedNote[]>([]);
+  const cachedRef = useRef<DecodedNote[]>([]);
 
   const loadNotes = useCallback(() => {
     const fresh = getNotes();
+    const decoded: DecodedNote[] = fresh.map((url) => {
+      const noteParam = url.split("?note=")[1];
+      const decoded = noteParam ? parseEncodedNote(noteParam) : null;
+      return { url, value: decoded?.value };
+    });
     if (
-      fresh.length !== cachedRef.current.length ||
-      fresh.some((n, i) => n !== cachedRef.current[i])
+      decoded.length !== cachedRef.current.length ||
+      decoded.some((n, i) => n.url !== cachedRef.current[i].url)
     ) {
-      cachedRef.current = fresh;
-      setNotes(fresh);
+      cachedRef.current = decoded;
+      setNotes(decoded);
     }
   }, []);
 
@@ -68,14 +79,21 @@ export function NotesCard() {
         </div>
       ) : (
         <div className="space-y-2 max-h-80 overflow-y-auto">
-          {notes.map((url, index) => (
+          {notes.map(({ url, value }, index) => (
             <div
               key={`${url}-${index}`}
               className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] hover:border-[var(--emerald-primary)]/30 transition-all group"
             >
-              <p className="flex-1 min-w-0 text-xs text-[var(--text-secondary)] truncate font-mono">
-                {url}
-              </p>
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                {value !== undefined && (
+                  <span className="shrink-0 px-2 py-1 text-xs font-medium rounded-md bg-[var(--emerald-primary)]/20 text-[var(--emerald-light)] border border-[var(--emerald-primary)]/30">
+                    {formatUnits(value, 6)} USDC
+                  </span>
+                )}
+                <p className="text-xs text-[var(--text-secondary)] truncate font-mono">
+                  {url}
+                </p>
+              </div>
               <button
                 onClick={() => handleCopy(url, index)}
                 className="shrink-0 p-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--emerald-primary)] hover:border-[var(--emerald-primary)]/50 transition-all opacity-0 group-hover:opacity-100"

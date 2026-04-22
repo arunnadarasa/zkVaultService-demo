@@ -14,11 +14,23 @@ export const saveNote = (note: EncodedNote): void => {
   );
   const baseUrl = window.location.origin;
 
-  // create link
   const noteLink = `${baseUrl}?note=${encoded}`;
   const notes = getNotes();
 
   window.localStorage.setItem(key, JSON.stringify([noteLink, ...notes]));
+};
+
+export const buildNoteUrl = (note: EncodedNote): string => {
+  const encoded = btoa(
+    JSON.stringify({
+      ...note,
+      value: note.value.toString(),
+      pk: note.pk.toString(),
+      random: note.random.toString(),
+      nullifier: note.nullifier.toString(),
+    }),
+  );
+  return `${window.location.origin}?note=${encoded}`;
 };
 
 export const getNotes = (): string[] => {

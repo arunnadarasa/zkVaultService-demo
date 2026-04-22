@@ -1,8 +1,17 @@
+import { EncodedNote } from "@/types/encodedNote.types";
 import circuitManifest from "./generated/circuitManifest";
 import { normalizeProof, normalizePublicInputs } from "./serialize";
-import type { CircuitName, NoirInputMap, ProofRequest, ProofResponse } from "./types";
+import type {
+  CircuitName,
+  NoirInputMap,
+  ProofRequest,
+  ProofResponse,
+} from "./types";
 import { Barretenberg, UltraHonkBackend } from "@aztec/bb.js";
 import { Noir } from "@noir-lang/noir_js";
+import { HexString } from "@evvm/evvm-js";
+import { toast } from "sonner";
+import { buildWithdrawInputs } from "../shielded/withdrawInputs";
 
 let browserApiPromise: Promise<Barretenberg> | undefined;
 
@@ -11,7 +20,10 @@ const getBrowserApi = () => {
     threads:
       typeof navigator === "undefined"
         ? 4
-        : Math.max(1, Math.min(8, Math.floor((navigator.hardwareConcurrency || 4) / 2))),
+        : Math.max(
+            1,
+            Math.min(8, Math.floor((navigator.hardwareConcurrency || 4) / 2)),
+          ),
   });
 
   return browserApiPromise;
@@ -36,8 +48,14 @@ export async function proveWithApi<TInputs extends NoirInputMap>(
   const backend = new UltraHonkBackend(circuit.bytecode, api);
   const { witness } = await noir.execute(request.inputs);
   const proofSettings = { verifierTarget: "evm" as const };
-  const { proof, publicInputs } = await backend.generateProof(witness, proofSettings);
-  const verified = await backend.verifyProof({ proof, publicInputs }, proofSettings);
+  const { proof, publicInputs } = await backend.generateProof(
+    witness,
+    proofSettings,
+  );
+  const verified = await backend.verifyProof(
+    { proof, publicInputs },
+    proofSettings,
+  );
 
   return {
     circuitName: request.circuitName,
@@ -56,4 +74,33 @@ export const proveInBrowser = async <TInputs extends NoirInputMap>(
 ): Promise<ProofResponse> => {
   const api = await getBrowserApi();
   return proveWithApi(request, api, "browser");
+};
+
+export const generateWithdrawProof = async (
+  note: EncodedNote,
+  address: HexString,
+) => {
+  if (!note.merkleRoot) {
+    toast.error(
+      "This note doesn't have a Merkle proof. Make a new deposit from this app.",
+    );
+    return;
+  }
+  const notifId = toast.loading(`Generating proof...`);
+  try {
+    const inputs = await buildWithdrawInputs(note, address as HexString);
+    const result = await proveInBrowser({
+      circuitName: "WithdrawFromPool",
+      inputs,
+      mode: "browser",
+    });
+    toast.success(
+      result.verified ? "Proof generated and verified" : "Proof generated",
+    );
+    return result;
+  } catch (e) {
+    toast.error(e instanceof Error ? e.message : "Error generating proof");
+  } finally {
+    toast.dismiss(notifId);
+  }
 };
