@@ -4,7 +4,7 @@ import { useCallback, useState, useEffect, useRef } from "react";
 import { getNotes, parseEncodedNote } from "@/lib/shielded/storage";
 import { toast } from "sonner";
 import { formatUnits } from "viem";
-import { CopyIcon, CheckIcon, DocumentIcon } from "./Icons";
+import { CopyIcon, CheckIcon, DocumentIcon } from "@/components/Icons";
 
 type DecodedNote = {
   url: string;

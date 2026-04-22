@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ConnectButton } from "../providers";
+import { ConnectButton } from "@/app/providers";
 
 export function Navbar() {
   return (

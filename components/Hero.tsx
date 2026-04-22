@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CopyIcon, CheckIcon } from "./Icons";
+import { CopyIcon, CheckIcon } from "@/components/Icons";
 
 interface SystemStatusProps {
   label: string;

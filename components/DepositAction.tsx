@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { UsdcBalance } from "./UsdcBalance";
+import { UsdcBalance } from "@/components/UsdcBalance";
 import { useEvvm } from "@/hooks/useEvvm";
 import { toast } from "sonner";
 import { parseUnits } from "viem";
 import { HexString } from "@evvm/evvm-js";
 import { createNote } from "@/lib/shielded/notes";
 import { saveNote, buildNoteUrl } from "@/lib/shielded/storage";
-import { PlusIcon } from "./Icons";
-import { NoteSuccessModal } from "./NoteSuccessModal";
+import { PlusIcon } from "@/components/Icons";
+import { NoteSuccessModal } from "@/components/NoteSuccessModal";
 
 export function DepositAction() {
   const { core, zkVault } = useEvvm();

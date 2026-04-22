@@ -2,11 +2,11 @@
 
 import { Suspense, useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Navbar } from "./components/Navbar";
-import { Hero } from "./components/Hero";
-import { DepositAction } from "./components/DepositAction";
-import { NoteModal } from "./components/NoteModal";
-import { NotesCard } from "./components/NotesCard";
+import { Navbar } from "@/components/Navbar";
+import { Hero } from "@/components/Hero";
+import { DepositAction } from "@/components/DepositAction";
+import { NoteModal } from "@/components/NoteModal";
+import { NotesCard } from "@/components/NotesCard";
 import { parseEncodedNote } from "@/lib/shielded/storage";
 
 function HomeContent() {

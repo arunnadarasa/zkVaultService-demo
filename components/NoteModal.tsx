@@ -4,7 +4,7 @@ import { useState } from "react";
 import { EncodedNote } from "@/types/encodedNote.types";
 import { toast } from "sonner";
 import { formatUnits } from "viem";
-import { CloseIcon } from "./Icons";
+import { CloseIcon } from "@/components/Icons";
 import { computeWithdrawCiphertext } from "@/lib/shielded/withdrawInputs";
 import { useEvvm } from "@/hooks/useEvvm";
 import { HexString } from "@evvm/evvm-js";
@@ -12,7 +12,7 @@ import { generateWithdrawProof, proveInBrowser } from "@/lib/noir/proving";
 import { buildSplitInputs } from "@/lib/shielded/splitInputs";
 import { createNotesFromSplit } from "@/lib/shielded/notes";
 import { saveNote, buildNoteUrl } from "@/lib/shielded/storage";
-import { NoteSuccessModal } from "./NoteSuccessModal";
+import { NoteSuccessModal } from "@/components/NoteSuccessModal";
 
 interface NoteModalProps {
   note: EncodedNote;

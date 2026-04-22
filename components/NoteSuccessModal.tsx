@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { CheckIcon, CopyIcon, CloseIcon } from "./Icons";
+import { CheckIcon, CopyIcon, CloseIcon } from "@/components/Icons";
 
 interface NoteSuccessModalProps {
   notes: string[];

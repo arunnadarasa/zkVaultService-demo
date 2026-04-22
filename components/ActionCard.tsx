@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PlusIcon } from "./Icons";
+import { PlusIcon } from "@/components/Icons";
 
 export function DepositCard({ onAction }: { onAction?: () => void }) {
   const [amount, setAmount] = useState("");
