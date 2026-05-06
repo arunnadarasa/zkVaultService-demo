@@ -1,6 +1,6 @@
 # ZkVaultService Demo
 
-A Next.js demo application for ZkVaultService - a private and compliant USDC transaction system on Ethereum using shielded pools and zero-knowledge proofs.
+A Next.js demo application for ZkVaultService - a private and compliant USDC transaction system on Arc Testnet using shielded pools and zero-knowledge proofs.
 
 ## Features
 
@@ -40,9 +40,9 @@ A Next.js demo application for ZkVaultService - a private and compliant USDC tra
    Edit `.env` with your deployment addresses:
 
    ```
-   NEXT_PUBLIC_ZKVAULT_ADDRESS=<your-zkvault-address>
-   NEXT_PUBLIC_EVVM_CORE_ADDRESS=<your-evvm-core-address>
-   NEXT_PUBLIC_USDC_TOKEN_ADDRESS=0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238
+   NEXT_PUBLIC_ZKVAULT_ADDRESS=0xab47C6B86B9BfE2E82Bc8aeB44c4a2Ce0581f2ad
+   NEXT_PUBLIC_EVVM_CORE_ADDRESS=0x8828A715795877dcfE0d12d190B21596bEDA8870
+   NEXT_PUBLIC_USDC_TOKEN_ADDRESS=0x3600000000000000000000000000000000000000
    FISHER_PRIVATE_KEY=<your-private-key>
    ```
 
@@ -62,7 +62,7 @@ A Next.js demo application for ZkVaultService - a private and compliant USDC tra
 1. Click "Connect Wallet" in the top right
 2. Select your wallet provider (MetaMask, Rabby, etc.)
 3. Approve the connection request
-4. Ensure you're on Sepolia testnet
+4. Ensure you're on Arc Testnet
 
 ### Depositing USDC
 
@@ -135,11 +135,21 @@ util/
 | `NEXT_PUBLIC_USDC_TOKEN_ADDRESS` | USDC token address             |
 | `FISHER_PRIVATE_KEY`             | Private key for fisher signing |
 
-## Testing on Sepolia
+## Arc Testnet Configuration
 
-The demo is configured for Sepolia testnet:
+The demo is configured for Arc testnet:
 
-- **Network**: Sepolia (chainId: 11155111)
-- **USDC**: `0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`
-- **Block Explorer**: https://sepolia.etherscan.io
+- **Network**: Arc Testnet (chainId: `5042002`)
+- **RPC URL**: `https://rpc.testnet.arc.network`
+- **USDC**: `0x3600000000000000000000000000000000000000`
+- **Block Explorer**: https://testnet.arcscan.app
+- **Faucet**: https://faucet.circle.com
+
+## Deployed Contracts (Arc Testnet)
+
+- **ShieldedPool (ZkVault)**: `0xab47C6B86B9BfE2E82Bc8aeB44c4a2Ce0581f2ad`
+- **EVVM Core**: `0x8828A715795877dcfE0d12d190B21596bEDA8870`
+- **Staking**: `0x0753A6702861B77e844Cb426Fbf102D3e9Dd7550`
+- **WithdrawFromPoolVerifier**: `0xe54D1758301a09b3323903f17762Fba86FCFd5AB`
+- **SplitNoteVerifier**: `0x51b83270BF60d203D43222fd5F6b81514aF0A647`
 
