@@ -9,7 +9,7 @@ import {
 import { useAccount, useWalletClient } from "wagmi";
 import { ZkVaultService } from "@/lib/service/zkVaultService";
 
-const CHAIN_ID = 11155111;
+const CHAIN_ID = 5042002;
 const EVVM_ADDRESS = process.env.NEXT_PUBLIC_EVVM_CORE_ADDRESS;
 const ZKVAULT_ADDRESS = process.env.NEXT_PUBLIC_ZKVAULT_ADDRESS;
 

@@ -7,7 +7,7 @@ import {
 } from "@evvm/evvm-js";
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { sepolia } from "viem/chains";
+import { arcTestnet } from "@/lib/chain/arcTestnet";
 
 export const runtime = "nodejs";
 
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     const account = privateKeyToAccount(pk as HexString);
     const client = createWalletClient({
       account,
-      chain: sepolia,
+      chain: arcTestnet,
       transport: http(),
     });
 

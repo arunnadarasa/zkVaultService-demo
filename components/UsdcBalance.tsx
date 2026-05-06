@@ -54,7 +54,7 @@ export function UsdcBalance() {
         <span className="text-2xl font-bold text-[var(--emerald-light)]">
           {balance} USDc
         </span>
-        <span className="text-xs text-[var(--emerald-primary)]">Sepolia</span>
+        <span className="text-xs text-[var(--emerald-primary)]">Arc Testnet</span>
       </div>
     </div>
   );

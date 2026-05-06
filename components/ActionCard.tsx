@@ -36,7 +36,7 @@ export function DepositCard({ onAction }: { onAction?: () => void }) {
           <span className="text-2xl font-bold text-[var(--emerald-light)]">
             {mockBalance} USDc
           </span>
-          <span className="text-xs text-[var(--emerald-primary)]">Sepolia</span>
+          <span className="text-xs text-[var(--emerald-primary)]">Arc Testnet</span>
         </div>
       </div>
 

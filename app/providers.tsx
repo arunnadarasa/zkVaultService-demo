@@ -7,14 +7,14 @@ import {
   ConnectButton,
 } from "@rainbow-me/rainbowkit";
 import { WagmiProvider, http, createConfig } from "wagmi";
-import { sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster, toast } from "sonner";
+import { arcTestnet } from "@/lib/chain/arcTestnet";
 
 const config = createConfig({
-  chains: [sepolia],
+  chains: [arcTestnet],
   transports: {
-    [sepolia.id]: http(),
+    [arcTestnet.id]: http(),
   },
 });
 

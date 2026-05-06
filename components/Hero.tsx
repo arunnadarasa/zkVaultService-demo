@@ -76,7 +76,7 @@ export function Hero() {
             System Status
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <SystemStatus label="Network" value="Sepolia" copyable={false} />
+            <SystemStatus label="Network" value="Arc Testnet" copyable={false} />
             <SystemStatus label="ZkVault" value={zkVault} />
             <SystemStatus label="EVVM Core" value={evvmCore} />
             <SystemStatus label="USDC" value={usdc} />
