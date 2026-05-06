@@ -11,10 +11,13 @@ import { saveNote, buildNoteUrl } from "@/lib/shielded/storage";
 import { PlusIcon } from "@/components/Icons";
 import { NoteSuccessModal } from "@/components/NoteSuccessModal";
 
+const ARCSCAN_BASE = "https://testnet.arcscan.app/tx/";
+
 export function DepositAction() {
   const { core, zkVault } = useEvvm();
   const [amount, setAmount] = useState("");
   const [createdNoteUrl, setCreatedNoteUrl] = useState<string | null>(null);
+  const [lastTxHash, setLastTxHash] = useState<string | null>(null);
 
   const onDeposit = async () => {
     if (!core || !zkVault) {
@@ -24,6 +27,16 @@ export function DepositAction() {
 
     try {
       const _amount = parseUnits(amount as `${number}`, 6);
+      const availableBalance = await core.getBalance(
+        core.signer.address,
+        process.env.NEXT_PUBLIC_USDC_TOKEN_ADDRESS as HexString,
+      );
+
+      if (availableBalance < _amount) {
+        throw new Error(
+          `Insufficient EVVM USDC balance. Available: ${availableBalance.toString()} (6 decimals), requested: ${_amount.toString()}.`,
+        );
+      }
 
       const note = await createNote(_amount);
       const commitment = note.commitment;
@@ -58,7 +71,19 @@ export function DepositAction() {
       if (!result.success) {
         throw new Error(result.error);
       }
-      toast.success("Deposit sent successfully");
+      const depositTx = result.data as string | undefined;
+      toast.success("Deposit sent successfully", {
+        action:
+          depositTx && depositTx.startsWith("0x")
+            ? {
+                label: "View tx",
+                onClick: () => window.open(`${ARCSCAN_BASE}${depositTx}`, "_blank"),
+              }
+            : undefined,
+      });
+      if (depositTx && depositTx.startsWith("0x")) {
+        setLastTxHash(depositTx);
+      }
 
       response = await fetch("/api/shielded-pool/register-root", {
         method: "POST",
@@ -78,6 +103,54 @@ export function DepositAction() {
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Deposit transaction failed",
+      );
+    }
+  };
+
+  const onFundEvvmBalance = async () => {
+    if (!core) {
+      toast.error("Connect wallet first.");
+      return;
+    }
+
+    try {
+      if (!amount.trim()) {
+        toast.error("Enter an amount to fund EVVM balance.");
+        return;
+      }
+      const _amount = parseUnits(amount as `${number}`, 6);
+      const notifId = toast.loading("Funding EVVM balance...");
+
+      const response = await fetch("/api/evvm/fund-balance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userAddress: core.signer.address,
+          amount: _amount.toString(),
+        }),
+      });
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      toast.dismiss(notifId);
+      const fundTx = result.data as string | undefined;
+      toast.success("EVVM balance funding transaction sent.", {
+        action:
+          fundTx && fundTx.startsWith("0x")
+            ? {
+                label: "View tx",
+                onClick: () => window.open(`${ARCSCAN_BASE}${fundTx}`, "_blank"),
+              }
+            : undefined,
+      });
+      if (fundTx && fundTx.startsWith("0x")) {
+        setLastTxHash(fundTx);
+      }
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to fund EVVM balance",
       );
     }
   };
@@ -121,6 +194,23 @@ export function DepositAction() {
         >
           Deposit USDc
         </button>
+        <button
+          onClick={onFundEvvmBalance}
+          disabled={!amount.trim()}
+          className="w-full mt-2 py-3 px-6 rounded-xl font-medium border border-[var(--emerald-primary)] text-[var(--emerald-light)] hover:bg-[var(--emerald-primary)]/10 transition-all"
+        >
+          Fund EVVM Balance
+        </button>
+        {lastTxHash && (
+          <a
+            href={`${ARCSCAN_BASE}${lastTxHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block mt-3 text-sm text-[var(--emerald-light)] underline underline-offset-2 hover:text-[var(--emerald-primary)]"
+          >
+            Last transaction: {lastTxHash.slice(0, 10)}...{lastTxHash.slice(-8)}
+          </a>
+        )}
       </div>
 
       {createdNoteUrl && (

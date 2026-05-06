@@ -18,6 +18,7 @@ interface IPayload {
 export async function POST(request: Request) {
   try {
     const pk = process.env.FISHER_PRIVATE_KEY;
+
     const account = privateKeyToAccount(pk as HexString);
     const client = createWalletClient({
       account,
@@ -36,14 +37,17 @@ export async function POST(request: Request) {
       data: txHash,
     });
   } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown proof generation error";
+    const normalizedError = errorMessage.includes("0xf4d678b8")
+      ? "Insufficient EVVM balance for deposit payment (selector 0xf4d678b8: InsufficientBalance). Fund EVVM balance first."
+      : errorMessage;
+
     console.error("Fisher route failed: ", error);
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Unknown proof generation error",
+        error: normalizedError,
       },
       { status: 500 },
     );
