@@ -68,6 +68,7 @@ Scope: Note `withdraw` and `split` failures on Arc Testnet
 - Added verifier error entries to app ABI for better diagnosis:
   - `zkVaultService-demo/lib/service/zkVaultABI.json`
 - Added user-facing normalized error explaining prover/verifier mismatch.
+- Kept ABI-based revert decoding in `fisher` so unknown selectors are translated to actionable messages.
 
 ### Failed Experiment (rolled back)
 
@@ -75,24 +76,47 @@ Scope: Note `withdraw` and `split` failures on Arc Testnet
 - **Observed result:** proof length changed from `8384` to `16000`, which moved further away from expected `8640`.
 - **Conclusion:** hypothesis rejected; reverted that experiment.
 
-### Ongoing Alignment Attempt
+### Alignment Attempts (what failed first, then what worked)
 
-- Downgraded `@noir-lang/noir_js` from beta.20 to beta.19 to better align with manifest/compiler lineage:
-  - `zkVaultService-demo/package.json`
-- Kept `verifierTarget: "evm"` active in proving paths.
-- Awaiting final confirmation whether this dependency alignment yields `8640` proof length or successful transactions.
+#### Attempt A (Failed): redeploy with mismatched Barretenberg CLI
+
+- We redeployed verifiers/contracts, but the local CLI used to generate Solidity verifiers was still a different Barretenberg version than the frontend prover stack.
+- Runtime still showed the same deterministic mismatch:
+  - `actualLength = 8384`
+  - `expectedLength = 8640`
+- **Conclusion:** redeploying alone is insufficient if verifier generation toolchain version is not aligned.
+
+#### Attempt B (Success): align Barretenberg versions end-to-end
+
+- Frontend was using `@aztec/bb.js@4.2.0`.
+- Local `bb` CLI used for verifier generation was `4.0.0-nightly...` (mismatch).
+- Updated local CLI to `bb 4.2.0`, regenerated verifiers, and redeployed:
+  - `WithdrawFromPoolVerifier`: `0xa56abB55Bde03B9079db8Ca373580A376Df623FF`
+  - `SplitNoteVerifier`: `0xb1A14EC7a1744C4A05bb17f6595C0ab9caE7F79f`
+  - `ShieldedPool`: `0x81a7a109057202aCa2CD6415F63f3A0bb23a366a`
+- Updated demo env address:
+  - `NEXT_PUBLIC_ZKVAULT_ADDRESS=0x81a7a109057202aCa2CD6415F63f3A0bb23a366a`
+- User confirmed the issue was fixed after this alignment.
 
 ## Practical Conclusion
 
-The root problem is contract/prover artifact incompatibility, not transaction flow logic.  
-To fully fix, ensure frontend prover stack (`noir_js` + `bb.js` + circuit artifacts) exactly matches the verifier generation used by currently deployed `SplitNoteVerifier` and `WithdrawFromPoolVerifier`.
+The root problem was contract/prover artifact incompatibility caused by a **Barretenberg version mismatch** across verifier generation and frontend proof generation, not transaction flow logic.  
+To fully fix, ensure frontend prover stack (`noir_js` + `bb.js` + circuit artifacts) exactly matches the verifier generation stack (especially `bb` CLI version) used by currently deployed `SplitNoteVerifier` and `WithdrawFromPoolVerifier`.
 
-## Suggested Next Validation Check
+## Final Cleanup
 
-After each change, verify these two numbers first:
+- Removed temporary debug instrumentation blocks from:
+  - `zkVaultService-demo/components/NoteModal.tsx`
+  - `zkVaultService-demo/app/api/fisher/route.ts`
+- Kept improved error decoding/normalization behavior in `fisher`.
 
-- `proofByteLength` from client instrumentation
-- `expectedLength` from verifier revert payload
+## Reusable Validation Checklist
 
-If they match, on-chain verification should proceed past `ProofLengthWrongWithLogN`.
+For future regressions, compare these first:
+
+- `proofByteLength` emitted by the prover path
+- `expectedLength` returned by `ProofLengthWrongWithLogN`
+- `bb` CLI version used for verifier generation vs `@aztec/bb.js` version used in app/runtime
+
+If proof lengths differ, treat it as a prover/verifier artifact mismatch before investigating app logic.
 

@@ -31,63 +31,12 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
     toast.success(`Withdrawn to ${address.slice(0, 6)}...${address.slice(-4)}`);
     const notifId = toast.loading("Sending withdraw to ZkVaultService...");
     try {
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "withdraw-pre",
-          hypothesisId: "W1",
-          location: "NoteModal.tsx:handleWithdraw:entry",
-          message: "Withdraw started",
-          data: {
-            isValidAddress,
-            addressPrefix: typeof address === "string" ? address.slice(0, 10) : null,
-            noteValue: note?.value?.toString?.(),
-            hasMerkleRoot: Boolean(note?.merkleRoot),
-            hasMerkleProofIndices: Boolean(note?.merkleProofIndices),
-            hasMerkleProofSiblings: Boolean(note?.merkleProofSiblings),
-            hasCore: Boolean(core),
-            hasZkVault: Boolean(zkVault),
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
-
       const ciphertext = computeWithdrawCiphertext(note, address as HexString);
       const nonce = await core.getAsyncNonce();
 
       const proof = await generateWithdrawProof(note, address as HexString);
 
       if (!proof) return toast.error("Error generating zk proof");
-
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "withdraw-pre",
-          hypothesisId: "W2",
-          location: "NoteModal.tsx:handleWithdraw:proof",
-          message: "Generated withdraw proof",
-          data: {
-            nonce: nonce?.toString?.(),
-            proofBytes: (proof?.proof as unknown as string | undefined)?.length ?? null,
-            proofByteLength:
-              typeof proof?.proof === "string" && proof.proof.startsWith("0x")
-                ? (proof.proof.length - 2) / 2
-                : null,
-            publicInputsLen: Array.isArray((proof as any)?.publicInputs)
-              ? (proof as any).publicInputs.length
-              : null,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
 
       const withdrawAction = await zkVault.withdraw({
         proof: proof.proof,
@@ -104,51 +53,12 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
       });
 
       const result = await response.json();
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "withdraw-pre",
-          hypothesisId: "W3",
-          location: "NoteModal.tsx:handleWithdraw:fisherResponse",
-          message: "Fisher responded to withdraw",
-          data: {
-            httpOk: response.ok,
-            httpStatus: response.status,
-            success: Boolean(result?.success),
-            error: typeof result?.error === "string" ? result.error.slice(0, 200) : null,
-            txHashPrefix: typeof result?.data === "string" ? result.data.slice(0, 10) : null,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       if (!result.success) {
         throw new Error(result.error);
       }
 
       toast.success("Withdraw sent successfully");
     } catch (e) {
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "withdraw-pre",
-          hypothesisId: "WZ",
-          location: "NoteModal.tsx:handleWithdraw:catch",
-          message: "Withdraw failed (catch)",
-          data: {
-            name: e instanceof Error ? e.name : typeof e,
-            message: e instanceof Error ? e.message.slice(0, 250) : String(e).slice(0, 250),
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       toast.error(e instanceof Error ? e.message : "Error in withdraw");
     } finally {
       toast.dismiss(notifId);
@@ -163,29 +73,6 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
       `Splitting note into 4 notes of ${(parseFloat(amount) / 4).toFixed(2)} USDc each...`,
     );
 
-    // #region agent log
-    fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-      body: JSON.stringify({
-        sessionId: "c3dc23",
-        runId: "split-pre",
-        hypothesisId: "A",
-        location: "NoteModal.tsx:handleSplit:entry",
-        message: "Split started",
-        data: {
-          noteValue: note?.value?.toString?.(),
-          hasMerkleRoot: Boolean(note?.merkleRoot),
-          hasMerkleProofIndices: Boolean(note?.merkleProofIndices),
-          hasMerkleProofSiblings: Boolean(note?.merkleProofSiblings),
-          hasCore: Boolean(core),
-          hasZkVault: Boolean(zkVault),
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
-
     if (!note) {
       toast.error("Choose a note to split.");
       return;
@@ -195,46 +82,12 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
       !note.merkleProofIndices ||
       !note.merkleProofSiblings
     ) {
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "split-pre",
-          hypothesisId: "A",
-          location: "NoteModal.tsx:handleSplit:missingMerkle",
-          message: "Split blocked: missing merkle proof data",
-          data: {
-            hasMerkleRoot: Boolean(note?.merkleRoot),
-            hasMerkleProofIndices: Boolean(note?.merkleProofIndices),
-            hasMerkleProofSiblings: Boolean(note?.merkleProofSiblings),
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       toast.error(
         "This note doesn't have a Merkle proof. Make a new deposit from this app.",
       );
       return;
     }
     if (!core || !zkVault) {
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "split-pre",
-          hypothesisId: "B",
-          location: "NoteModal.tsx:handleSplit:notInitialized",
-          message: "Split blocked: EVVM not initialized",
-          data: { hasCore: Boolean(core), hasZkVault: Boolean(zkVault) },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       toast.error("EVVM not initialized. Connect your wallet.");
       return;
     }
@@ -242,77 +95,15 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
     const notifId = toast.loading("Generating split proof...");
     try {
       const { inputs, outputs } = await buildSplitInputs(note);
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "split-pre",
-          hypothesisId: "C",
-          location: "NoteModal.tsx:handleSplit:builtInputs",
-          message: "Built split inputs",
-          data: {
-            expectedRoot: inputs.expected_merkle_root,
-            merkleProofLength: inputs.merkle_proof_length,
-            nullifierInPrefix: String(inputs.nullifier_in).slice(0, 10),
-            commitmentsPrefix: [
-              String(inputs.new_commitment_1).slice(0, 10),
-              String(inputs.new_commitment_2).slice(0, 10),
-              String(inputs.new_commitment_3).slice(0, 10),
-              String(inputs.new_commitment_4).slice(0, 10),
-            ],
-            outputsCount: outputs?.length,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       const proof = await proveInBrowser({
         circuitName: "SplitNote",
         inputs,
         mode: "browser",
       });
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "split-pre",
-          hypothesisId: "C",
-          location: "NoteModal.tsx:handleSplit:proved",
-          message: "Generated split proof",
-          data: {
-            proofBytes: (proof?.proof as unknown as string | undefined)?.length ?? null,
-            proofByteLength:
-              typeof proof?.proof === "string" && proof.proof.startsWith("0x")
-                ? (proof.proof.length - 2) / 2
-                : null,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       toast.dismiss(notifId);
 
       const notifId2 = toast.loading("Enviando split al ZkVault...");
       const nonce = await core.getAsyncNonce();
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "split-pre",
-          hypothesisId: "D",
-          location: "NoteModal.tsx:handleSplit:nonce",
-          message: "Fetched nonce for split",
-          data: { nonce: nonce?.toString?.() },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
 
       const splitAction = await zkVault.split({
         expectedRoot: inputs.expected_merkle_root,
@@ -325,21 +116,6 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
         proof: proof.proof,
         nonce,
       });
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "split-pre",
-          hypothesisId: "D",
-          location: "NoteModal.tsx:handleSplit:builtAction",
-          message: "Built split signed action",
-          data: { hasSignedAction: Boolean(splitAction), actionType: (splitAction as any)?.type ?? null },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
 
       let response = await fetch("/api/fisher", {
         method: "POST",
@@ -348,27 +124,6 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
       });
 
       let result = await response.json();
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "split-pre",
-          hypothesisId: "E",
-          location: "NoteModal.tsx:handleSplit:fisherResponse",
-          message: "Fisher responded to split",
-          data: {
-            httpOk: response.ok,
-            httpStatus: response.status,
-            success: Boolean(result?.success),
-            error: typeof result?.error === "string" ? result.error.slice(0, 200) : null,
-            txHashPrefix: typeof result?.data === "string" ? result.data.slice(0, 10) : null,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       if (!result.success) {
         throw new Error(result.error);
       }
@@ -399,24 +154,6 @@ export function NoteModal({ note, onClose }: NoteModalProps) {
       const urls = newNotes.map(buildNoteUrl);
       setCreatedNoteUrls(urls);
     } catch (e) {
-      // #region agent log
-      fetch("http://127.0.0.1:7524/ingest/f043a085-d893-4493-9c8f-6fec9495a1cd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c3dc23" },
-        body: JSON.stringify({
-          sessionId: "c3dc23",
-          runId: "split-pre",
-          hypothesisId: "Z",
-          location: "NoteModal.tsx:handleSplit:catch",
-          message: "Split failed (catch)",
-          data: {
-            name: e instanceof Error ? e.name : typeof e,
-            message: e instanceof Error ? e.message.slice(0, 250) : String(e).slice(0, 250),
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       toast.error(e instanceof Error ? e.message : "Error in split");
     }
   };
