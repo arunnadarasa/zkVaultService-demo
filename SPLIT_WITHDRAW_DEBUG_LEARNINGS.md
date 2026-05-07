@@ -96,6 +96,8 @@ Scope: Note `withdraw` and `split` failures on Arc Testnet
   - `ShieldedPool`: `0x81a7a109057202aCa2CD6415F63f3A0bb23a366a`
 - Updated demo env address:
   - `NEXT_PUBLIC_ZKVAULT_ADDRESS=0x81a7a109057202aCa2CD6415F63f3A0bb23a366a`
+- Captured deployment block for fast on-chain Merkle sync defaults:
+  - `VITE_POOL_DEPLOY_BLOCK=40954131` for `ShieldedPool=0x81a7a109057202aCa2CD6415F63f3A0bb23a366a`
 - User confirmed the issue was fixed after this alignment.
 
 ## Practical Conclusion

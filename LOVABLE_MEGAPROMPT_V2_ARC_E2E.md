@@ -29,6 +29,7 @@ Both **split** and **withdraw** must be wired for successful execution with the 
 - Chain ID: `5042002`
 - RPC URL: `https://rpc.testnet.arc.network`
 - Explorer: `https://testnet.arcscan.app`
+- Merkle scan default start block: `VITE_POOL_DEPLOY_BLOCK=40954131` (deployment block of active ShieldedPool)
 
 ### Core service addresses (active)
 
@@ -62,6 +63,7 @@ Create `.env.example`:
 NEXT_PUBLIC_ZKVAULT_ADDRESS=0x81a7a109057202aCa2CD6415F63f3A0bb23a366a
 NEXT_PUBLIC_EVVM_CORE_ADDRESS=0x8828A715795877dcfE0d12d190B21596bEDA8870
 NEXT_PUBLIC_USDC_TOKEN_ADDRESS=0x3600000000000000000000000000000000000000
+VITE_POOL_DEPLOY_BLOCK=40954131
 FISHER_PRIVATE_KEY=
 ```
 
